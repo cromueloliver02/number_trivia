@@ -3,7 +3,7 @@ include: package:flutter_lints/flutter.yaml
 linter:
    rules:
       prefer_single_quotes: true
-      always_specify_types: true
+      # always_specify_types: true
       always_declare_return_types: true
       avoid_void_async: true
       always_use_package_imports: true
