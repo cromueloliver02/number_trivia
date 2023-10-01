@@ -22,21 +22,35 @@ void main() {
   const NumberTrivia tNumberTrivia =
       NumberTrivia(text: 'test', number: tNumber);
 
-  test(
-    'should get number trivia for the number from the repository when success',
-    () async {
-      // arrange
-      when(
-        () => mockNumberTriviaRepository.getConcreteNumberTrivia(any<int>()),
-      ).thenAnswer((invocation) async => const Right(tNumberTrivia));
-      // act
-      final result =
-          await usecase(const GetConcreteNumberTriviaParams(number: tNumber));
-      // assert
-      expect(result, const Right(tNumberTrivia));
-      verify(() => mockNumberTriviaRepository.getConcreteNumberTrivia(tNumber))
-          .called(1);
-      verifyNoMoreInteractions(mockNumberTriviaRepository);
-    },
-  );
+  group('GetConcreteNumberTrivia usecase', () {
+    test(
+      'should get number trivia for the number from the repository when success',
+      () async {
+        // arrange
+        when(
+          () => mockNumberTriviaRepository.getConcreteNumberTrivia(any<int>()),
+        ).thenAnswer((invocation) async => const Right(tNumberTrivia));
+        // act
+        final result =
+            await usecase(const GetConcreteNumberTriviaParams(number: tNumber));
+        // assert
+        expect(result, const Right(tNumberTrivia));
+        verify(() =>
+                mockNumberTriviaRepository.getConcreteNumberTrivia(tNumber))
+            .called(1);
+        verifyNoMoreInteractions(mockNumberTriviaRepository);
+      },
+    );
+
+    test(
+      'should get failure for the number from the repository when failed',
+      () async {
+        // arrange
+
+        // act
+
+        // assert
+      },
+    );
+  });
 }
