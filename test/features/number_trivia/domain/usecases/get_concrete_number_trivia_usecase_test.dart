@@ -35,9 +35,8 @@ void main() {
             await usecase(const GetConcreteNumberTriviaParams(number: tNumber));
         // assert
         expect(result, const Right(tNumberTrivia));
-        verify(() =>
-                mockNumberTriviaRepository.getConcreteNumberTrivia(tNumber))
-            .called(1);
+        verify(
+            () => mockNumberTriviaRepository.getConcreteNumberTrivia(tNumber));
         verifyNoMoreInteractions(mockNumberTriviaRepository);
       },
     );
