@@ -31,4 +31,24 @@ void main() {
       networkInfo: mockNetworkInfo,
     );
   });
+
+  group('NumberTriviaRepositoryImpl', () {
+    group('getConcreteNumberTrivia()', () {
+      const int tNumber = 1;
+
+      test(
+        'should check if the device is online',
+        () async {
+          // arrange
+          when(() => mockNetworkInfo.isConnected)
+              .thenAnswer((invocation) async => true);
+          // act
+          repository.getConcreteNumberTrivia(tNumber);
+          // assert
+          verify(() => mockNetworkInfo.isConnected);
+          verifyNoMoreInteractions(mockNetworkInfo);
+        },
+      );
+    });
+  });
 }
