@@ -49,6 +49,20 @@ void main() {
           verifyNoMoreInteractions(mockNetworkInfo);
         },
       );
+
+      group('device is online', () {
+        setUp(() {
+          when(() => mockNetworkInfo.isConnected)
+              .thenAnswer((invocation) async => true);
+        });
+      });
+
+      group('device is offline', () {
+        setUp(() {
+          when(() => mockNetworkInfo.isConnected)
+              .thenAnswer((invocation) async => false);
+        });
+      });
     });
   });
 }
