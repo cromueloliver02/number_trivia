@@ -21,4 +21,11 @@ class NumberTriviaModel extends NumberTrivia {
       number: map['number']?.toInt() ?? 0,
     );
   }
+
+  NumberTrivia toEntity() {
+    return NumberTrivia(
+      text: text,
+      number: number,
+    );
+  }
 }

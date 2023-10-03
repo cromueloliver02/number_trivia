@@ -1,10 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:fpdart/fpdart.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'package:number_trivia/core/platform/network_info.dart';
 import 'package:number_trivia/features/number_trivia/data/datasources/number_trivia_local_datasource.dart';
 import 'package:number_trivia/features/number_trivia/data/datasources/number_trivia_remote_datasource.dart';
+import 'package:number_trivia/features/number_trivia/data/models/number_trivia_model.dart';
 import 'package:number_trivia/features/number_trivia/data/repositories/number_trivia_repository_impl.dart';
+import 'package:number_trivia/features/number_trivia/domain/entities/number_trivia_entity.dart';
 import 'package:number_trivia/features/number_trivia/domain/repositories/number_trivia_repository.dart';
 
 class MockNumberTriviaRemoteDataSource extends Mock
@@ -32,6 +35,12 @@ void main() {
     );
   });
 
+  const int tNumber = 1;
+  const NumberTriviaModel tNumberTriviaModel =
+      NumberTriviaModel(text: 'test trivia', number: tNumber);
+  final NumberTrivia tNumberTrivia = tNumberTriviaModel.toEntity();
+  // const NumberTrivia tNumberTrivia = tNumberTriviaModel;
+
   group('NumberTriviaRepositoryImpl', () {
     group('getConcreteNumberTrivia()', () {
       const int tNumber = 1;
@@ -50,12 +59,31 @@ void main() {
         },
       );
 
-      group('device is online', () {
-        setUp(() {
-          when(() => mockNetworkInfo.isConnected)
-              .thenAnswer((invocation) async => true);
-        });
-      });
+      group(
+        'device is online',
+        () {
+          setUp(() {
+            when(() => mockNetworkInfo.isConnected)
+                .thenAnswer((invocation) async => true);
+          });
+
+          test(
+            'should return remote data when the call to remote data source is successful',
+            () async {
+              // arrange
+              when(() =>
+                      mockRemoteDataSource.getConcreteNumberTrivia(any<int>()))
+                  .thenAnswer((invocation) async => tNumberTriviaModel);
+              // act
+              final result = await repository.getConcreteNumberTrivia(tNumber);
+              // assert
+              verify(
+                  () => mockRemoteDataSource.getConcreteNumberTrivia(tNumber));
+              expect(result, Right(tNumberTrivia));
+            },
+          );
+        },
+      );
 
       group('device is offline', () {
         setUp(() {
