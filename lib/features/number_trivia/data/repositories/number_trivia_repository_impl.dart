@@ -1,4 +1,5 @@
 import 'package:fpdart/fpdart.dart';
+import 'package:number_trivia/core/error/exceptions.dart';
 
 import 'package:number_trivia/core/error/failures.dart';
 import 'package:number_trivia/core/platform/network_info.dart';
@@ -25,12 +26,16 @@ class NumberTriviaRepositoryImpl implements NumberTriviaRepository {
   ) async {
     await networkInfo.isConnected;
 
-    final NumberTriviaModel numberTriviaModel =
-        await remoteDataSource.getConcreteNumberTrivia(number);
+    try {
+      final NumberTriviaModel numberTriviaModel =
+          await remoteDataSource.getConcreteNumberTrivia(number);
 
-    await localDataSource.cacheNumberTrivia(numberTriviaModel);
+      await localDataSource.cacheNumberTrivia(numberTriviaModel);
 
-    return Right(numberTriviaModel.toEntity());
+      return Right(numberTriviaModel.toEntity());
+    } on ServerException {
+      return Left(ServerFailure());
+    }
   }
 
   @override
