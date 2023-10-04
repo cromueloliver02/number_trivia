@@ -164,6 +164,21 @@ void main() {
             expect(result, Right(tNumberTrivia));
           },
         );
+
+        test(
+          'should return [CacheFailure] when there is no cached data present',
+          () async {
+            // arrange
+            when(() => mockLocalDataSource.getLastNumberTrivia())
+                .thenThrow(CacheException());
+            // act
+            final result = await repository.getConcreteNumberTrivia(tNumber);
+            // assert
+            verify(() => mockLocalDataSource.getLastNumberTrivia());
+            verifyZeroInteractions(mockRemoteDataSource);
+            expect(result, Left(CacheFailure()));
+          },
+        );
       });
     });
   });

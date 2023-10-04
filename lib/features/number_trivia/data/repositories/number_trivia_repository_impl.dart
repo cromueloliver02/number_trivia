@@ -28,19 +28,21 @@ class NumberTriviaRepositoryImpl implements NumberTriviaRepository {
       final bool isConnected = await networkInfo.isConnected;
 
       if (isConnected) {
-        final NumberTriviaModel numberTriviaModel =
+        final NumberTriviaModel remoteNumberTriviaModel =
             await remoteDataSource.getConcreteNumberTrivia(number);
-        await localDataSource.cacheNumberTrivia(numberTriviaModel);
+        await localDataSource.cacheNumberTrivia(remoteNumberTriviaModel);
 
-        return Right(numberTriviaModel.toEntity());
+        return Right(remoteNumberTriviaModel.toEntity());
       } else {
-        final NumberTriviaModel numberTriviaModel =
+        final NumberTriviaModel localNumberTriviaModel =
             await localDataSource.getLastNumberTrivia();
 
-        return Right(numberTriviaModel.toEntity());
+        return Right(localNumberTriviaModel.toEntity());
       }
     } on ServerException {
       return Left(ServerFailure());
+    } on CacheException {
+      return Left(CacheFailure());
     }
   }
 
