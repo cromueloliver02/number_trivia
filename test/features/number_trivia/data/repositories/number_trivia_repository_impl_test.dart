@@ -144,6 +144,26 @@ void main() {
           when(() => mockNetworkInfo.isConnected)
               .thenAnswer((invocation) async => false);
         });
+
+        test(
+          'should return last locally cached data when the cached data is present',
+          () async {
+            // arrange
+            when(() => mockRemoteDataSource.getConcreteNumberTrivia(any<int>()))
+                .thenAnswer((invocation) async => tNumberTriviaModel);
+            when(() =>
+                    mockLocalDataSource.cacheNumberTrivia(tNumberTriviaModel))
+                .thenAnswer((invocation) => Future.value());
+            when(() => mockLocalDataSource.getLastNumberTrivia())
+                .thenAnswer((invocation) async => tNumberTriviaModel);
+            // act
+            final result = await repository.getConcreteNumberTrivia(tNumber);
+            // assert
+            verify(() => mockLocalDataSource.getLastNumberTrivia());
+            verifyZeroInteractions(mockRemoteDataSource);
+            expect(result, Right(tNumberTrivia));
+          },
+        );
       });
     });
   });
