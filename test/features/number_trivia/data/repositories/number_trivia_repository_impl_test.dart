@@ -257,6 +257,33 @@ void main() {
           },
         );
       });
+
+      group('device is offline', () {
+        setUp(() {
+          when(() => mockNetworkInfo.isConnected)
+              .thenAnswer((invocation) async => false);
+        });
+
+        test(
+          'should return last locally cached data when the cached data is present',
+          () async {
+            // arrange
+            when(() => mockRemoteDataSource.getRandomNumberTrivia())
+                .thenAnswer((invocation) async => tNumberTriviaModel);
+            when(() =>
+                    mockLocalDataSource.cacheNumberTrivia(tNumberTriviaModel))
+                .thenAnswer((invocation) => Future.value());
+            when(() => mockLocalDataSource.getLastNumberTrivia())
+                .thenAnswer((invocation) async => tNumberTriviaModel);
+            // act
+            final result = await repository.getRandomNumberTrivia();
+            // assert
+            verify(() => mockLocalDataSource.getLastNumberTrivia());
+            verifyNoMoreInteractions(mockRemoteDataSource);
+            expect(result, Right(tNumberTrivia));
+          },
+        );
+      });
     });
   });
 }

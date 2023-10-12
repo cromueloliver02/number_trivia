@@ -30,6 +30,7 @@ class NumberTriviaRepositoryImpl implements NumberTriviaRepository {
       if (isConnected) {
         final NumberTriviaModel remoteNumberTriviaModel =
             await remoteDataSource.getConcreteNumberTrivia(number);
+
         await localDataSource.cacheNumberTrivia(remoteNumberTriviaModel);
 
         return Right(remoteNumberTriviaModel.toEntity());
@@ -49,14 +50,21 @@ class NumberTriviaRepositoryImpl implements NumberTriviaRepository {
   @override
   Future<Either<Failure, NumberTrivia>> getRandomNumberTrivia() async {
     try {
-      await networkInfo.isConnected;
+      final bool isConnected = await networkInfo.isConnected;
 
-      final NumberTriviaModel remoteNumberTriviaModel =
-          await remoteDataSource.getRandomNumberTrivia();
+      if (isConnected) {
+        final NumberTriviaModel remoteNumberTriviaModel =
+            await remoteDataSource.getRandomNumberTrivia();
 
-      await localDataSource.cacheNumberTrivia(remoteNumberTriviaModel);
+        await localDataSource.cacheNumberTrivia(remoteNumberTriviaModel);
 
-      return Right(remoteNumberTriviaModel.toEntity());
+        return Right(remoteNumberTriviaModel.toEntity());
+      } else {
+        final NumberTriviaModel localNumberTriviaModel =
+            await localDataSource.getLastNumberTrivia();
+
+        return Right(localNumberTriviaModel.toEntity());
+      }
     } on ServerException {
       return Left(ServerFailure());
     }
