@@ -279,8 +279,23 @@ void main() {
             final result = await repository.getRandomNumberTrivia();
             // assert
             verify(() => mockLocalDataSource.getLastNumberTrivia());
-            verifyNoMoreInteractions(mockRemoteDataSource);
+            verifyZeroInteractions(mockRemoteDataSource);
             expect(result, Right(tNumberTrivia));
+          },
+        );
+
+        test(
+          'should return [CacheFailure] when there is no cached data present',
+          () async {
+            // arrange
+            when(() => mockLocalDataSource.getLastNumberTrivia())
+                .thenThrow(CacheException());
+            // act
+            final result = await repository.getRandomNumberTrivia();
+            // assert
+            verify(() => mockLocalDataSource.getLastNumberTrivia());
+            verifyZeroInteractions(mockRemoteDataSource);
+            expect(result, Left(CacheFailure()));
           },
         );
       });

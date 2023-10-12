@@ -67,6 +67,8 @@ class NumberTriviaRepositoryImpl implements NumberTriviaRepository {
       }
     } on ServerException {
       return Left(ServerFailure());
+    } on CacheException {
+      return Left(CacheFailure());
     }
   }
 }
