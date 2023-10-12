@@ -189,6 +189,8 @@ void main() {
           // arrange
           when(() => mockNetworkInfo.isConnected)
               .thenAnswer((invocation) async => true);
+          when(() => mockRemoteDataSource.getRandomNumberTrivia())
+              .thenAnswer((invocation) async => tNumberTriviaModel);
           // act
           await repository.getRandomNumberTrivia();
           // assert
@@ -196,6 +198,27 @@ void main() {
           verifyNoMoreInteractions(mockNetworkInfo);
         },
       );
+
+      group('device is online', () {
+        setUp(() {
+          when(() => mockNetworkInfo.isConnected)
+              .thenAnswer((invocation) async => true);
+        });
+
+        test(
+          'should return remote data when the call to remote data source is successful',
+          () async {
+            // arrange
+            when(() => mockRemoteDataSource.getRandomNumberTrivia())
+                .thenAnswer((invocation) async => tNumberTriviaModel);
+            // act
+            final result = await repository.getRandomNumberTrivia();
+            // assert
+            verify(() => mockRemoteDataSource.getRandomNumberTrivia());
+            expect(result, Right(tNumberTrivia));
+          },
+        );
+      });
     });
   });
 }
