@@ -49,7 +49,12 @@ class NumberTriviaRepositoryImpl implements NumberTriviaRepository {
   @override
   Future<Either<Failure, NumberTrivia>> getRandomNumberTrivia() async {
     await networkInfo.isConnected;
-    await remoteDataSource.getRandomNumberTrivia();
-    return const Right(NumberTrivia(text: 'test trivia', number: 1));
+
+    final NumberTriviaModel remoteNumberTriviaModel =
+        await remoteDataSource.getRandomNumberTrivia();
+
+    await localDataSource.cacheNumberTrivia(remoteNumberTriviaModel);
+
+    return Right(remoteNumberTriviaModel.toEntity());
   }
 }

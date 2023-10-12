@@ -191,6 +191,8 @@ void main() {
               .thenAnswer((invocation) async => true);
           when(() => mockRemoteDataSource.getRandomNumberTrivia())
               .thenAnswer((invocation) async => tNumberTriviaModel);
+          when(() => mockLocalDataSource.cacheNumberTrivia(tNumberTriviaModel))
+              .thenAnswer((invocation) => Future.value());
           // act
           await repository.getRandomNumberTrivia();
           // assert
@@ -211,11 +213,32 @@ void main() {
             // arrange
             when(() => mockRemoteDataSource.getRandomNumberTrivia())
                 .thenAnswer((invocation) async => tNumberTriviaModel);
+            when(() =>
+                    mockLocalDataSource.cacheNumberTrivia(tNumberTriviaModel))
+                .thenAnswer((invocation) => Future.value());
             // act
             final result = await repository.getRandomNumberTrivia();
             // assert
             verify(() => mockRemoteDataSource.getRandomNumberTrivia());
             expect(result, Right(tNumberTrivia));
+          },
+        );
+
+        test(
+          'should cache data locally when the call to remote data source is successful',
+          () async {
+            // arrange
+            when(() => mockRemoteDataSource.getRandomNumberTrivia())
+                .thenAnswer((invocation) async => tNumberTriviaModel);
+            when(() =>
+                    mockLocalDataSource.cacheNumberTrivia(tNumberTriviaModel))
+                .thenAnswer((invocation) => Future.value());
+            // act
+            await repository.getRandomNumberTrivia();
+            // assert
+            verify(() => mockRemoteDataSource.getRandomNumberTrivia());
+            verify(() =>
+                mockLocalDataSource.cacheNumberTrivia(tNumberTriviaModel));
           },
         );
       });
