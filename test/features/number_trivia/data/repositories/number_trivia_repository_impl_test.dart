@@ -181,5 +181,21 @@ void main() {
         );
       });
     });
+
+    group('getRandomNumberTrivia()', () {
+      test(
+        'should check if the device is online',
+        () async {
+          // arrange
+          when(() => mockNetworkInfo.isConnected)
+              .thenAnswer((invocation) async => true);
+          // act
+          await repository.getRandomNumberTrivia();
+          // assert
+          verify(() => mockNetworkInfo.isConnected);
+          verifyNoMoreInteractions(mockNetworkInfo);
+        },
+      );
+    });
   });
 }

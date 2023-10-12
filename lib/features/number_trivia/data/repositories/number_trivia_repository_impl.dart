@@ -47,7 +47,8 @@ class NumberTriviaRepositoryImpl implements NumberTriviaRepository {
   }
 
   @override
-  Future<Either<Failure, NumberTrivia>> getRandomNumberTrivia() {
-    throw UnimplementedError();
+  Future<Either<Failure, NumberTrivia>> getRandomNumberTrivia() async {
+    await networkInfo.isConnected;
+    return const Right(NumberTrivia(text: 'test trivia', number: 1));
   }
 }
