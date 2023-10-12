@@ -241,6 +241,21 @@ void main() {
                 mockLocalDataSource.cacheNumberTrivia(tNumberTriviaModel));
           },
         );
+
+        test(
+          'should return [ServerFailure] when the call to remote data source is unsuccessful',
+          () async {
+            // arrange
+            when(() => mockRemoteDataSource.getRandomNumberTrivia())
+                .thenThrow(ServerException());
+            // act
+            final result = await repository.getRandomNumberTrivia();
+            // assert
+            verify(() => mockRemoteDataSource.getRandomNumberTrivia());
+            verifyZeroInteractions(mockLocalDataSource);
+            expect(result, Left(ServerFailure()));
+          },
+        );
       });
     });
   });
