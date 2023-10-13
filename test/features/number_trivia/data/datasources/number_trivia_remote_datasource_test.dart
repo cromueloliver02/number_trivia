@@ -1,8 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:mocktail/mocktail.dart';
 
 import 'package:number_trivia/features/number_trivia/data/datasources/number_trivia_remote_datasource.dart';
+import 'package:number_trivia/features/number_trivia/data/models/number_trivia_model.dart';
 
 import '../../../../fixtures/fixture_reader.dart';
 
@@ -22,6 +25,8 @@ void main() {
   group('getConcreteNumberTrivia()', () {
     const int tNumber = 1;
     final String tNumberTriviaJson = fixture('trivia.json');
+    final NumberTriviaModel tNumberTriviaModel =
+        NumberTriviaModel.fromJson(jsonDecode(tNumberTriviaJson));
 
     test(
       '''
@@ -43,6 +48,28 @@ void main() {
               Uri.parse('http://numbersapi.com/$tNumber'),
               headers: {'Content-Type': 'application/json'},
             ));
+      },
+    );
+
+    test(
+      'should return [NumberTriviaModel] when the response status code is 200 (success)',
+      () async {
+        // arrange
+        when(() => mockHttpClient.get(
+                  Uri.parse('http://numbersapi.com/$tNumber'),
+                  headers: {'Content-Type': 'application/json'},
+                ))
+            .thenAnswer(
+                (invocation) async => http.Response(tNumberTriviaJson, 200));
+        // act
+        final result =
+            await numberTriviaRemoteDataSource.getConcreteNumberTrivia(tNumber);
+        // assert
+        verify(() => mockHttpClient.get(
+              Uri.parse('http://numbersapi.com/$tNumber'),
+              headers: {'Content-Type': 'application/json'},
+            ));
+        expect(result, tNumberTriviaModel);
       },
     );
   });
