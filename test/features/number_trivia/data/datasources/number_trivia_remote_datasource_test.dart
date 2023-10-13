@@ -135,5 +135,21 @@ void main() {
         expect(result, tNumberTriviaModel);
       },
     );
+
+    test(
+      'should throw a [ServerException] when the response status code is NOT 200 (failure)',
+      () async {
+        // arrange
+        setupMockHttpClientFailure500('http://numbersapi.com/random');
+        // act
+        final result = numberTriviaRemoteDataSource.getRandomNumberTrivia();
+        // assert
+        verify(() => mockHttpClient.get(
+              Uri.parse('http://numbersapi.com/random'),
+              headers: {'Content-Type': 'application/json'},
+            ));
+        expect(result, throwsA(const TypeMatcher<ServerException>()));
+      },
+    );
   });
 }

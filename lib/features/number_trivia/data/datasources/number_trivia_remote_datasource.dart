@@ -45,6 +45,9 @@ class NumberTriviaRemoteDataSourceImpl implements NumberTriviaRemoteDataSource {
       Uri.parse('http://numbersapi.com/random'),
       headers: {'Content-Type': 'application/json'},
     );
+
+    if (response.statusCode != HttpStatus.ok) throw ServerException();
+
     final NumberTriviaModel numberTriviaModel =
         NumberTriviaModel.fromJson(jsonDecode(response.body));
 
