@@ -24,11 +24,11 @@ void main() {
     );
   });
 
-  final String tNumberTriviaJson = fixture('trivia_cache.json');
-  final NumberTriviaModel tNumberTriviaModel =
-      NumberTriviaModel.fromJson(jsonDecode(tNumberTriviaJson));
-
   group('getLastNumberTrivia()', () {
+    final String tNumberTriviaJson = fixture('trivia_cache.json');
+    final NumberTriviaModel tNumberTriviaModel =
+        NumberTriviaModel.fromJson(jsonDecode(tNumberTriviaJson));
+
     test(
       'should return [NumberTriviaModel] from the SharedPreferences when there is one in the cache',
       () async {
@@ -54,6 +54,30 @@ void main() {
         // assert
         verify(() => mockSharedPreferences.getString(cacheNumberTriviaKey));
         expect(result, throwsA(const TypeMatcher<CacheException>()));
+      },
+    );
+  });
+
+  group('cacheNumberTrivia()', () {
+    // created a new tNumberTriviaModel to imitate the real world scenaion
+    // instead of using the tNumberTriviaModel from the json
+    const NumberTriviaModel tNumberTriviaModel =
+        NumberTriviaModel(text: 'test trivia', number: 1);
+
+    test(
+      'should call SharedPreferences.setString() to cache the data',
+      () async {
+        // arrange
+        when(() =>
+                mockSharedPreferences.setString(any<String>(), any<String>()))
+            .thenAnswer((invocation) async => true);
+        // act
+        await numberTriviaLocalDataSource.cacheNumberTrivia(tNumberTriviaModel);
+        // assert
+        final String tNumberTriviaJson =
+            jsonEncode(tNumberTriviaModel.toJson());
+        verify(() => mockSharedPreferences.setString(
+            cacheNumberTriviaKey, tNumberTriviaJson));
       },
     );
   });
