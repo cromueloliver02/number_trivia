@@ -23,9 +23,28 @@ void main() {
     );
   });
 
+  const int tNumber = 1;
+  final String tNumberTriviaJson = fixture('trivia.json');
+
+  void setupMockHttpClientSucess200() {
+    when(() => mockHttpClient.get(
+              Uri.parse('http://numbersapi.com/$tNumber'),
+              headers: {'Content-Type': 'application/json'},
+            ))
+        .thenAnswer(
+            (invocation) async => http.Response(tNumberTriviaJson, 200));
+  }
+
+  void setupMockHttpClientFailure500() {
+    when(() => mockHttpClient.get(
+              Uri.parse('http://numbersapi.com/$tNumber'),
+              headers: {'Content-Type': 'application/json'},
+            ))
+        .thenAnswer(
+            (invocation) async => http.Response('Something went wrong', 500));
+  }
+
   group('getConcreteNumberTrivia()', () {
-    const int tNumber = 1;
-    final String tNumberTriviaJson = fixture('trivia.json');
     final NumberTriviaModel tNumberTriviaModel =
         NumberTriviaModel.fromJson(jsonDecode(tNumberTriviaJson));
 
@@ -36,12 +55,7 @@ void main() {
       ''',
       () async {
         // arrange
-        when(() => mockHttpClient.get(
-                  Uri.parse('http://numbersapi.com/$tNumber'),
-                  headers: {'Content-Type': 'application/json'},
-                ))
-            .thenAnswer(
-                (invocation) async => http.Response(tNumberTriviaJson, 200));
+        setupMockHttpClientSucess200();
         // act
         await numberTriviaRemoteDataSource.getConcreteNumberTrivia(1);
         // assert
@@ -56,12 +70,7 @@ void main() {
       'should return [NumberTriviaModel] when the response status code is 200 (success)',
       () async {
         // arrange
-        when(() => mockHttpClient.get(
-                  Uri.parse('http://numbersapi.com/$tNumber'),
-                  headers: {'Content-Type': 'application/json'},
-                ))
-            .thenAnswer(
-                (invocation) async => http.Response(tNumberTriviaJson, 200));
+        setupMockHttpClientSucess200();
         // act
         final result =
             await numberTriviaRemoteDataSource.getConcreteNumberTrivia(tNumber);
@@ -75,15 +84,10 @@ void main() {
     );
 
     test(
-      'should return a [ServerException] when the response status code is NOT 200 (failure)',
+      'should throw a [ServerException] when the response status code is NOT 200 (failure)',
       () async {
         // arrange
-        when(() => mockHttpClient.get(
-                  Uri.parse('http://numbersapi.com/$tNumber'),
-                  headers: {'Content-Type': 'application/json'},
-                ))
-            .thenAnswer((invocation) async =>
-                http.Response('Something went wrong', 500));
+        setupMockHttpClientFailure500();
         // act
         final result =
             numberTriviaRemoteDataSource.getConcreteNumberTrivia(tNumber);
