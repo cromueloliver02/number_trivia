@@ -25,6 +25,8 @@ void main() {
 
   const int tNumber = 1;
   final String tNumberTriviaJson = fixture('trivia.json');
+  final NumberTriviaModel tNumberTriviaModel =
+      NumberTriviaModel.fromJson(jsonDecode(tNumberTriviaJson));
 
   void setupMockHttpClientSucess200(String url) {
     when(() => mockHttpClient.get(
@@ -45,9 +47,6 @@ void main() {
   }
 
   group('getConcreteNumberTrivia()', () {
-    final NumberTriviaModel tNumberTriviaModel =
-        NumberTriviaModel.fromJson(jsonDecode(tNumberTriviaJson));
-
     test(
       '''
         should perform a GET request on a URL with number being the endpoint and
@@ -117,6 +116,23 @@ void main() {
               Uri.parse('http://numbersapi.com/random'),
               headers: {'Content-Type': 'application/json'},
             ));
+      },
+    );
+
+    test(
+      'should return [NumberTriviaModel] when the response status code is 200 (success)',
+      () async {
+        // arrange
+        setupMockHttpClientSucess200('http://numbersapi.com/random');
+        // act
+        final result =
+            await numberTriviaRemoteDataSource.getRandomNumberTrivia();
+        // assert
+        verify(() => mockHttpClient.get(
+              Uri.parse('http://numbersapi.com/random'),
+              headers: {'Content-Type': 'application/json'},
+            ));
+        expect(result, tNumberTriviaModel);
       },
     );
   });
