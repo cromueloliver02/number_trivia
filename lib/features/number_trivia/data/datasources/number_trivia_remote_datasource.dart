@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:http/http.dart' as http;
+import 'package:number_trivia/core/error/exceptions.dart';
 
 import 'package:number_trivia/features/number_trivia/data/models/number_trivia_model.dart';
 
@@ -28,6 +30,9 @@ class NumberTriviaRemoteDataSourceImpl implements NumberTriviaRemoteDataSource {
     final Uri uri = Uri.parse('http://numbersapi.com/$number');
     final Map<String, String> headers = {'Content-Type': 'application/json'};
     final http.Response response = await _httpClient.get(uri, headers: headers);
+
+    if (response.statusCode != HttpStatus.ok) throw ServerException();
+
     final NumberTriviaModel numberTriviaModel =
         NumberTriviaModel.fromJson(jsonDecode(response.body));
 

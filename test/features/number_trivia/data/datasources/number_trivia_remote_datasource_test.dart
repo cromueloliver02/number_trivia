@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:mocktail/mocktail.dart';
+import 'package:number_trivia/core/error/exceptions.dart';
 
 import 'package:number_trivia/features/number_trivia/data/datasources/number_trivia_remote_datasource.dart';
 import 'package:number_trivia/features/number_trivia/data/models/number_trivia_model.dart';
@@ -70,6 +71,28 @@ void main() {
               headers: {'Content-Type': 'application/json'},
             ));
         expect(result, tNumberTriviaModel);
+      },
+    );
+
+    test(
+      'should return a [ServerException] when the response status code is NOT 200 (failure)',
+      () async {
+        // arrange
+        when(() => mockHttpClient.get(
+                  Uri.parse('http://numbersapi.com/$tNumber'),
+                  headers: {'Content-Type': 'application/json'},
+                ))
+            .thenAnswer((invocation) async =>
+                http.Response('Something went wrong', 500));
+        // act
+        final result =
+            numberTriviaRemoteDataSource.getConcreteNumberTrivia(tNumber);
+        // assert
+        verify(() => mockHttpClient.get(
+              Uri.parse('http://numbersapi.com/$tNumber'),
+              headers: {'Content-Type': 'application/json'},
+            ));
+        expect(result, throwsA(const TypeMatcher<ServerException>()));
       },
     );
   });
