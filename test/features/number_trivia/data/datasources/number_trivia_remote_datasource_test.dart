@@ -26,18 +26,18 @@ void main() {
   const int tNumber = 1;
   final String tNumberTriviaJson = fixture('trivia.json');
 
-  void setupMockHttpClientSucess200() {
+  void setupMockHttpClientSucess200(String url) {
     when(() => mockHttpClient.get(
-              Uri.parse('http://numbersapi.com/$tNumber'),
+              Uri.parse(url),
               headers: {'Content-Type': 'application/json'},
             ))
         .thenAnswer(
             (invocation) async => http.Response(tNumberTriviaJson, 200));
   }
 
-  void setupMockHttpClientFailure500() {
+  void setupMockHttpClientFailure500(String url) {
     when(() => mockHttpClient.get(
-              Uri.parse('http://numbersapi.com/$tNumber'),
+              Uri.parse(url),
               headers: {'Content-Type': 'application/json'},
             ))
         .thenAnswer(
@@ -55,7 +55,7 @@ void main() {
       ''',
       () async {
         // arrange
-        setupMockHttpClientSucess200();
+        setupMockHttpClientSucess200('http://numbersapi.com/$tNumber');
         // act
         await numberTriviaRemoteDataSource.getConcreteNumberTrivia(1);
         // assert
@@ -70,7 +70,7 @@ void main() {
       'should return [NumberTriviaModel] when the response status code is 200 (success)',
       () async {
         // arrange
-        setupMockHttpClientSucess200();
+        setupMockHttpClientSucess200('http://numbersapi.com/$tNumber');
         // act
         final result =
             await numberTriviaRemoteDataSource.getConcreteNumberTrivia(tNumber);
@@ -87,7 +87,7 @@ void main() {
       'should throw a [ServerException] when the response status code is NOT 200 (failure)',
       () async {
         // arrange
-        setupMockHttpClientFailure500();
+        setupMockHttpClientFailure500('http://numbersapi.com/$tNumber');
         // act
         final result =
             numberTriviaRemoteDataSource.getConcreteNumberTrivia(tNumber);
@@ -97,6 +97,26 @@ void main() {
               headers: {'Content-Type': 'application/json'},
             ));
         expect(result, throwsA(const TypeMatcher<ServerException>()));
+      },
+    );
+  });
+
+  group('getRandomNumberTrivia()', () {
+    test(
+      '''
+        should perform a GET request on a URL with random being the endpoint and
+        with application/json header
+      ''',
+      () async {
+        // arrange
+        setupMockHttpClientSucess200('http://numbersapi.com/random');
+        // act
+        await numberTriviaRemoteDataSource.getRandomNumberTrivia();
+        // assert
+        verify(() => mockHttpClient.get(
+              Uri.parse('http://numbersapi.com/random'),
+              headers: {'Content-Type': 'application/json'},
+            ));
       },
     );
   });

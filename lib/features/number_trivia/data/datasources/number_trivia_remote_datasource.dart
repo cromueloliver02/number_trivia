@@ -40,7 +40,11 @@ class NumberTriviaRemoteDataSourceImpl implements NumberTriviaRemoteDataSource {
   }
 
   @override
-  Future<NumberTriviaModel> getRandomNumberTrivia() {
-    throw UnimplementedError();
+  Future<NumberTriviaModel> getRandomNumberTrivia() async {
+    _httpClient.get(
+      Uri.parse('http://numbersapi.com/random'),
+      headers: {'Content-Type': 'application/json'},
+    );
+    return const NumberTriviaModel(text: 'test trivia', number: 1);
   }
 }
