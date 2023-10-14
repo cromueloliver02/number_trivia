@@ -168,12 +168,21 @@ void main() {
           NumberTrivia(text: 'test trivia', number: 1);
       const Failure tFailure = Failure();
 
+      void stubGetRandomNumberTriviaSuccess() {
+        when(() => mockGetRandomNumberTrivia(NoParams()))
+            .thenAnswer((invocation) async => const Right(tNumberTrivia));
+      }
+
+      void stubGetRandomNumberTriviaFailure() {
+        when(() => mockGetRandomNumberTrivia(NoParams()))
+            .thenAnswer((invocation) async => const Left(tFailure));
+      }
+
       test(
         'should get the data from the random use case',
         () async {
           // arrange
-          when(() => mockGetRandomNumberTrivia(NoParams()))
-              .thenAnswer((invocation) async => const Right(tNumberTrivia));
+          stubGetRandomNumberTriviaSuccess();
           // act
           bloc.add(NumberTriviaRandomLoaded());
           await untilCalled(() => mockGetRandomNumberTrivia(NoParams()));
@@ -188,8 +197,7 @@ void main() {
         NumberTriviaRandomLoaded is added and data is gotten successfully
         ''',
         build: () {
-          when(() => mockGetRandomNumberTrivia(NoParams()))
-              .thenAnswer((invocation) async => const Right(tNumberTrivia));
+          stubGetRandomNumberTriviaSuccess();
           return bloc;
         },
         act: (bloc) => bloc.add(NumberTriviaRandomLoaded()),
@@ -205,8 +213,7 @@ void main() {
         NumberTriviaRandomLoaded is added and getting data fails
         ''',
         build: () {
-          when(() => mockGetRandomNumberTrivia(NoParams()))
-              .thenAnswer((invocation) async => const Left(tFailure));
+          stubGetRandomNumberTriviaFailure();
           return bloc;
         },
         act: (bloc) => bloc.add(NumberTriviaRandomLoaded()),
