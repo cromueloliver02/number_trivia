@@ -31,12 +31,14 @@ class NumberTriviaBloc extends Bloc<NumberTriviaEvent, NumberTriviaState> {
     NumberTriviaConcreteLoaded event,
     Emitter<NumberTriviaState> emit,
   ) {
-    final Either<Failure, int> either =
+    final Either<Failure, int> eitherNumber =
         _inputConverter.stringToUnsignedInt(event.number);
 
-    either.fold(
+    eitherNumber.fold(
       (Failure failure) => emit(NumberTriviaFailure(failure: failure)),
-      (int integer) => throw UnimplementedError(),
+      (int number) {
+        _getConcreteNumberTrivia(GetConcreteNumberTriviaParams(number: number));
+      },
     );
   }
 }
