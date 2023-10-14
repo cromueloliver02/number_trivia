@@ -49,6 +49,7 @@ void main() {
     final int tNumberParsed = int.parse(tNumberString);
     final NumberTrivia tNumberTrivia =
         NumberTrivia(text: 'test trivia', number: tNumberParsed);
+    const Failure tFailure = Failure();
 
     void stubStringToUnsignedIntSuccess() {
       when(() => mockInputConverter.stringToUnsignedInt(any<String>()))
@@ -64,6 +65,12 @@ void main() {
       when(() => mockGetConcreteNumberTrivia(
               GetConcreteNumberTriviaParams(number: tNumberParsed)))
           .thenAnswer((invocation) async => Right(tNumberTrivia));
+    }
+
+    void stubGetConcreteNumberTriviaFailure() {
+      when(() => mockGetConcreteNumberTrivia(
+              GetConcreteNumberTriviaParams(number: tNumberParsed)))
+          .thenAnswer((invocation) async => const Left(Failure()));
     }
 
     test(
@@ -115,8 +122,8 @@ void main() {
 
     blocTest<NumberTriviaBloc, NumberTriviaState>(
       '''
-      emits [NumberTriviaInProgress, NumberTriviaSuccess] when MyEvent is added
-      data is gotten successfully
+      emits [NumberTriviaInProgress, NumberTriviaSuccess] when
+      NumberTriviaConcreteLoaded is added and data is gotten successfully
       ''',
       build: () {
         stubStringToUnsignedIntSuccess();
@@ -128,6 +135,24 @@ void main() {
       expect: () => <NumberTriviaState>[
         NumberTriviaInProgress(),
         NumberTriviaSuccess(trivia: tNumberTrivia),
+      ],
+    );
+
+    blocTest<NumberTriviaBloc, NumberTriviaState>(
+      '''
+      emits [NumberTriviaInProgress, NumberTriviaFailure] when
+      NumberTriviaConcreteLoaded is added and getting data fails
+      ''',
+      build: () {
+        stubStringToUnsignedIntSuccess();
+        stubGetConcreteNumberTriviaFailure();
+        return bloc;
+      },
+      act: (bloc) =>
+          bloc.add(const NumberTriviaConcreteLoaded(number: tNumberString)),
+      expect: () => <NumberTriviaState>[
+        NumberTriviaInProgress(),
+        const NumberTriviaFailure(failure: tFailure),
       ],
     );
   });

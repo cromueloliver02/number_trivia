@@ -45,7 +45,7 @@ class NumberTriviaBloc extends Bloc<NumberTriviaEvent, NumberTriviaState> {
         );
 
         eitherTrivia.fold(
-          (Failure failure) => throw UnimplementedError(),
+          (Failure failure) => emit(NumberTriviaFailure(failure: failure)),
           (NumberTrivia trivia) => emit(NumberTriviaSuccess(trivia: trivia)),
         );
       },
