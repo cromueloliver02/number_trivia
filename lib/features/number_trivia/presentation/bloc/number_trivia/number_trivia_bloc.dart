@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fpdart/fpdart.dart';
 
 import 'package:number_trivia/core/error/failures.dart';
+import 'package:number_trivia/core/usecase/usecase.dart';
 import 'package:number_trivia/core/util/input_converter.dart';
 import 'package:number_trivia/features/number_trivia/domain/entities/number_trivia_entity.dart';
 import 'package:number_trivia/features/number_trivia/domain/usecases/get_concrete_number_trivia_usecase.dart';
@@ -25,6 +26,7 @@ class NumberTriviaBloc extends Bloc<NumberTriviaEvent, NumberTriviaState> {
         _inputConverter = inputConverter,
         super(NumberTriviaInitial()) {
     on<NumberTriviaConcreteLoaded>(_onNumberTriviaConcreteLoaded);
+    on<NumberTriviaRandomLoaded>(_onNumberTriviaRandomLoaded);
   }
 
   void _onNumberTriviaConcreteLoaded(
@@ -50,5 +52,12 @@ class NumberTriviaBloc extends Bloc<NumberTriviaEvent, NumberTriviaState> {
         );
       },
     );
+  }
+
+  void _onNumberTriviaRandomLoaded(
+    NumberTriviaRandomLoaded event,
+    Emitter<NumberTriviaState> emit,
+  ) {
+    _getRandomNumberTrivia(NoParams());
   }
 }

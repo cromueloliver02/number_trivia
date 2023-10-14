@@ -4,6 +4,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'package:number_trivia/core/error/failures.dart';
+import 'package:number_trivia/core/usecase/usecase.dart';
 import 'package:number_trivia/core/util/input_converter.dart';
 import 'package:number_trivia/features/number_trivia/domain/entities/number_trivia_entity.dart';
 import 'package:number_trivia/features/number_trivia/domain/usecases/get_concrete_number_trivia_usecase.dart';
@@ -156,6 +157,28 @@ void main() {
           NumberTriviaInProgress(),
           const NumberTriviaFailure(failure: tFailure),
         ],
+      );
+    },
+  );
+
+  group(
+    'NumberTriviaRandomLoaded()',
+    () {
+      const NumberTrivia tNumberTrivia =
+          NumberTrivia(text: 'test trivia', number: 1);
+
+      test(
+        'should get the data from the random use case',
+        () async {
+          // arrange
+          when(() => mockGetRandomNumberTrivia(NoParams()))
+              .thenAnswer((invocation) async => const Right(tNumberTrivia));
+          // act
+          bloc.add(NumberTriviaRandomLoaded());
+          await untilCalled(() => mockGetRandomNumberTrivia(NoParams()));
+          // assert
+          verify(() => mockGetRandomNumberTrivia(NoParams()));
+        },
       );
     },
   );
