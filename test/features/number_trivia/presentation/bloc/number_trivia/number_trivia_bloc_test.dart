@@ -1,5 +1,6 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:fpdart/fpdart.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'package:number_trivia/core/util/input_converter.dart';
@@ -40,4 +41,24 @@ void main() {
       expect(result, NumberTriviaInitial());
     },
   );
+
+  group('NumberTriviaConcreteLoaded()', () {
+    const String tNumberString = '123';
+    final int tNumberParsed = int.parse(tNumberString);
+
+    test(
+      'should call the InputConverter to validate and convert the string to an unsigned integer',
+      () async {
+        // arrange
+        when(() => mockInputConverter.stringToUnsignedInt(any<String>()))
+            .thenReturn(Right(tNumberParsed));
+        // act
+        bloc.add(const NumberTriviaConcreteLoaded(number: tNumberString));
+        await untilCalled(
+            () => mockInputConverter.stringToUnsignedInt(any<String>()));
+        // assert
+        verify(() => mockInputConverter.stringToUnsignedInt(tNumberString));
+      },
+    );
+  });
 }
