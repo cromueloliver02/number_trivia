@@ -2,7 +2,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:mocktail/mocktail.dart';
 
-import 'package:number_trivia/core/error/failures.dart';
 import 'package:number_trivia/core/util/input_converter.dart';
 import 'package:number_trivia/features/number_trivia/domain/entities/number_trivia_entity.dart';
 import 'package:number_trivia/features/number_trivia/domain/usecases/get_concrete_number_trivia_usecase.dart';
@@ -49,15 +48,23 @@ void main() {
     final NumberTrivia tNumberTrivia =
         NumberTrivia(text: 'test trivia', number: tNumberParsed);
 
+    void stubStringToUnsignedIntSuccess() {
+      when(() => mockInputConverter.stringToUnsignedInt(any<String>()))
+          .thenReturn(Right(tNumberParsed));
+    }
+
+    void stubGetConcreteNumberTriviaSuccess() {
+      when(() => mockGetConcreteNumberTrivia(
+              GetConcreteNumberTriviaParams(number: tNumberParsed)))
+          .thenAnswer((invocation) async => Right(tNumberTrivia));
+    }
+
     test(
       'should call the InputConverter to validate and convert the string to an unsigned integer',
       () async {
         // arrange
-        when(() => mockInputConverter.stringToUnsignedInt(any<String>()))
-            .thenReturn(Right(tNumberParsed));
-        when(() => mockGetConcreteNumberTrivia(
-                GetConcreteNumberTriviaParams(number: tNumberParsed)))
-            .thenAnswer((invocation) async => Right(tNumberTrivia));
+        stubStringToUnsignedIntSuccess();
+        stubGetConcreteNumberTriviaSuccess();
         // act
         bloc.add(const NumberTriviaConcreteLoaded(number: tNumberString));
         await untilCalled(
@@ -71,8 +78,7 @@ void main() {
       'should emit [NumberTriviaFailure] when the input is invalid',
       () async {
         // arrange
-        when(() => mockInputConverter.stringToUnsignedInt(any<String>()))
-            .thenReturn(Left(FormatFailure()));
+        stubStringToUnsignedIntSuccess();
         // act
         bloc.add(const NumberTriviaConcreteLoaded(number: tNumberString));
         await untilCalled(
@@ -87,11 +93,8 @@ void main() {
       'should get the data from the concrete use case',
       () async {
         // arrange
-        when(() => mockInputConverter.stringToUnsignedInt(any<String>()))
-            .thenReturn(Right(tNumberParsed));
-        when(() => mockGetConcreteNumberTrivia(
-                GetConcreteNumberTriviaParams(number: tNumberParsed)))
-            .thenAnswer((invocation) async => Right(tNumberTrivia));
+        stubStringToUnsignedIntSuccess();
+        stubGetConcreteNumberTriviaSuccess();
         // act
         bloc.add(const NumberTriviaConcreteLoaded(number: tNumberString));
         await untilCalled(
