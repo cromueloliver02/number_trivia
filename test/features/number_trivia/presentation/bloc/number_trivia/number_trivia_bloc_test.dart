@@ -1,7 +1,9 @@
+import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:mocktail/mocktail.dart';
 
+import 'package:number_trivia/core/error/failures.dart';
 import 'package:number_trivia/core/util/input_converter.dart';
 import 'package:number_trivia/features/number_trivia/domain/entities/number_trivia_entity.dart';
 import 'package:number_trivia/features/number_trivia/domain/usecases/get_concrete_number_trivia_usecase.dart';
@@ -53,6 +55,11 @@ void main() {
           .thenReturn(Right(tNumberParsed));
     }
 
+    void stubStringToUnsignedIntFailure() {
+      when(() => mockInputConverter.stringToUnsignedInt(any<String>()))
+          .thenReturn(Left(FormatFailure()));
+    }
+
     void stubGetConcreteNumberTriviaSuccess() {
       when(() => mockGetConcreteNumberTrivia(
               GetConcreteNumberTriviaParams(number: tNumberParsed)))
@@ -78,7 +85,8 @@ void main() {
       'should emit [NumberTriviaFailure] when the input is invalid',
       () async {
         // arrange
-        stubStringToUnsignedIntSuccess();
+        stubStringToUnsignedIntFailure();
+        stubGetConcreteNumberTriviaSuccess();
         // act
         bloc.add(const NumberTriviaConcreteLoaded(number: tNumberString));
         await untilCalled(
@@ -103,6 +111,24 @@ void main() {
         verify(() => mockGetConcreteNumberTrivia(
             GetConcreteNumberTriviaParams(number: tNumberParsed)));
       },
+    );
+
+    blocTest<NumberTriviaBloc, NumberTriviaState>(
+      '''
+      emits [NumberTriviaInProgress, NumberTriviaSuccess] when MyEvent is added
+      data is gotten successfully
+      ''',
+      build: () {
+        stubStringToUnsignedIntSuccess();
+        stubGetConcreteNumberTriviaSuccess();
+        return bloc;
+      },
+      act: (bloc) =>
+          bloc.add(const NumberTriviaConcreteLoaded(number: tNumberString)),
+      expect: () => <NumberTriviaState>[
+        NumberTriviaInProgress(),
+        NumberTriviaSuccess(trivia: tNumberTrivia),
+      ],
     );
   });
 }
