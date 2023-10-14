@@ -44,116 +44,119 @@ void main() {
     },
   );
 
-  group('NumberTriviaConcreteLoaded()', () {
-    const String tNumberString = '123';
-    final int tNumberParsed = int.parse(tNumberString);
-    final NumberTrivia tNumberTrivia =
-        NumberTrivia(text: 'test trivia', number: tNumberParsed);
-    const Failure tFailure = Failure();
+  group(
+    'NumberTriviaConcreteLoaded()',
+    () {
+      const String tNumberString = '123';
+      final int tNumberParsed = int.parse(tNumberString);
+      final NumberTrivia tNumberTrivia =
+          NumberTrivia(text: 'test trivia', number: tNumberParsed);
+      const Failure tFailure = Failure();
 
-    void stubStringToUnsignedIntSuccess() {
-      when(() => mockInputConverter.stringToUnsignedInt(any<String>()))
-          .thenReturn(Right(tNumberParsed));
-    }
+      void stubStringToUnsignedIntSuccess() {
+        when(() => mockInputConverter.stringToUnsignedInt(any<String>()))
+            .thenReturn(Right(tNumberParsed));
+      }
 
-    void stubStringToUnsignedIntFailure() {
-      when(() => mockInputConverter.stringToUnsignedInt(any<String>()))
-          .thenReturn(Left(FormatFailure()));
-    }
+      void stubStringToUnsignedIntFailure() {
+        when(() => mockInputConverter.stringToUnsignedInt(any<String>()))
+            .thenReturn(Left(FormatFailure()));
+      }
 
-    void stubGetConcreteNumberTriviaSuccess() {
-      when(() => mockGetConcreteNumberTrivia(
-              GetConcreteNumberTriviaParams(number: tNumberParsed)))
-          .thenAnswer((invocation) async => Right(tNumberTrivia));
-    }
+      void stubGetConcreteNumberTriviaSuccess() {
+        when(() => mockGetConcreteNumberTrivia(
+                GetConcreteNumberTriviaParams(number: tNumberParsed)))
+            .thenAnswer((invocation) async => Right(tNumberTrivia));
+      }
 
-    void stubGetConcreteNumberTriviaFailure() {
-      when(() => mockGetConcreteNumberTrivia(
-              GetConcreteNumberTriviaParams(number: tNumberParsed)))
-          .thenAnswer((invocation) async => const Left(Failure()));
-    }
+      void stubGetConcreteNumberTriviaFailure() {
+        when(() => mockGetConcreteNumberTrivia(
+                GetConcreteNumberTriviaParams(number: tNumberParsed)))
+            .thenAnswer((invocation) async => const Left(Failure()));
+      }
 
-    test(
-      'should call the InputConverter to validate and convert the string to an unsigned integer',
-      () async {
-        // arrange
-        stubStringToUnsignedIntSuccess();
-        stubGetConcreteNumberTriviaSuccess();
-        // act
-        bloc.add(const NumberTriviaConcreteLoaded(number: tNumberString));
-        await untilCalled(
-            () => mockInputConverter.stringToUnsignedInt(any<String>()));
-        // assert
-        verify(() => mockInputConverter.stringToUnsignedInt(tNumberString));
-      },
-    );
+      test(
+        'should call the InputConverter to validate and convert the string to an unsigned integer',
+        () async {
+          // arrange
+          stubStringToUnsignedIntSuccess();
+          stubGetConcreteNumberTriviaSuccess();
+          // act
+          bloc.add(const NumberTriviaConcreteLoaded(number: tNumberString));
+          await untilCalled(
+              () => mockInputConverter.stringToUnsignedInt(any<String>()));
+          // assert
+          verify(() => mockInputConverter.stringToUnsignedInt(tNumberString));
+        },
+      );
 
-    test(
-      'should emit [NumberTriviaFailure] when the input is invalid',
-      () async {
-        // arrange
-        stubStringToUnsignedIntFailure();
-        stubGetConcreteNumberTriviaSuccess();
-        // act
-        bloc.add(const NumberTriviaConcreteLoaded(number: tNumberString));
-        await untilCalled(
-            () => mockInputConverter.stringToUnsignedInt(any<String>()));
-        final result = bloc.state;
-        // assert
-        expect(result, isA<NumberTriviaFailure>());
-      },
-    );
+      test(
+        'should emit [NumberTriviaFailure] when the input is invalid',
+        () async {
+          // arrange
+          stubStringToUnsignedIntFailure();
+          stubGetConcreteNumberTriviaSuccess();
+          // act
+          bloc.add(const NumberTriviaConcreteLoaded(number: tNumberString));
+          await untilCalled(
+              () => mockInputConverter.stringToUnsignedInt(any<String>()));
+          final result = bloc.state;
+          // assert
+          expect(result, isA<NumberTriviaFailure>());
+        },
+      );
 
-    test(
-      'should get the data from the concrete use case',
-      () async {
-        // arrange
-        stubStringToUnsignedIntSuccess();
-        stubGetConcreteNumberTriviaSuccess();
-        // act
-        bloc.add(const NumberTriviaConcreteLoaded(number: tNumberString));
-        await untilCalled(
-            () => mockInputConverter.stringToUnsignedInt(any<String>()));
-        // assert
-        verify(() => mockGetConcreteNumberTrivia(
-            GetConcreteNumberTriviaParams(number: tNumberParsed)));
-      },
-    );
+      test(
+        'should get the data from the concrete use case',
+        () async {
+          // arrange
+          stubStringToUnsignedIntSuccess();
+          stubGetConcreteNumberTriviaSuccess();
+          // act
+          bloc.add(const NumberTriviaConcreteLoaded(number: tNumberString));
+          await untilCalled(
+              () => mockInputConverter.stringToUnsignedInt(any<String>()));
+          // assert
+          verify(() => mockGetConcreteNumberTrivia(
+              GetConcreteNumberTriviaParams(number: tNumberParsed)));
+        },
+      );
 
-    blocTest<NumberTriviaBloc, NumberTriviaState>(
-      '''
+      blocTest<NumberTriviaBloc, NumberTriviaState>(
+        '''
       emits [NumberTriviaInProgress, NumberTriviaSuccess] when
       NumberTriviaConcreteLoaded is added and data is gotten successfully
       ''',
-      build: () {
-        stubStringToUnsignedIntSuccess();
-        stubGetConcreteNumberTriviaSuccess();
-        return bloc;
-      },
-      act: (bloc) =>
-          bloc.add(const NumberTriviaConcreteLoaded(number: tNumberString)),
-      expect: () => <NumberTriviaState>[
-        NumberTriviaInProgress(),
-        NumberTriviaSuccess(trivia: tNumberTrivia),
-      ],
-    );
+        build: () {
+          stubStringToUnsignedIntSuccess();
+          stubGetConcreteNumberTriviaSuccess();
+          return bloc;
+        },
+        act: (bloc) =>
+            bloc.add(const NumberTriviaConcreteLoaded(number: tNumberString)),
+        expect: () => <NumberTriviaState>[
+          NumberTriviaInProgress(),
+          NumberTriviaSuccess(trivia: tNumberTrivia),
+        ],
+      );
 
-    blocTest<NumberTriviaBloc, NumberTriviaState>(
-      '''
+      blocTest<NumberTriviaBloc, NumberTriviaState>(
+        '''
       emits [NumberTriviaInProgress, NumberTriviaFailure] when
       NumberTriviaConcreteLoaded is added and getting data fails
       ''',
-      build: () {
-        stubStringToUnsignedIntSuccess();
-        stubGetConcreteNumberTriviaFailure();
-        return bloc;
-      },
-      act: (bloc) =>
-          bloc.add(const NumberTriviaConcreteLoaded(number: tNumberString)),
-      expect: () => <NumberTriviaState>[
-        NumberTriviaInProgress(),
-        const NumberTriviaFailure(failure: tFailure),
-      ],
-    );
-  });
+        build: () {
+          stubStringToUnsignedIntSuccess();
+          stubGetConcreteNumberTriviaFailure();
+          return bloc;
+        },
+        act: (bloc) =>
+            bloc.add(const NumberTriviaConcreteLoaded(number: tNumberString)),
+        expect: () => <NumberTriviaState>[
+          NumberTriviaInProgress(),
+          const NumberTriviaFailure(failure: tFailure),
+        ],
+      );
+    },
+  );
 }
