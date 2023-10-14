@@ -1,8 +1,8 @@
-import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:mocktail/mocktail.dart';
 
+import 'package:number_trivia/core/error/failures.dart';
 import 'package:number_trivia/core/util/input_converter.dart';
 import 'package:number_trivia/features/number_trivia/domain/usecases/get_concrete_number_trivia_usecase.dart';
 import 'package:number_trivia/features/number_trivia/domain/usecases/get_random_number_trivia_usecase.dart';
@@ -58,6 +58,22 @@ void main() {
             () => mockInputConverter.stringToUnsignedInt(any<String>()));
         // assert
         verify(() => mockInputConverter.stringToUnsignedInt(tNumberString));
+      },
+    );
+
+    test(
+      'should emit [NumberTriviaFailure] when the input is invalid',
+      () async {
+        // arrange
+        when(() => mockInputConverter.stringToUnsignedInt(any<String>()))
+            .thenReturn(Left(FormatFailure()));
+        // act
+        bloc.add(const NumberTriviaConcreteLoaded(number: tNumberString));
+        await untilCalled(
+            () => mockInputConverter.stringToUnsignedInt(any<String>()));
+        final result = bloc.state;
+        // assert
+        expect(result, isA<NumberTriviaFailure>());
       },
     );
   });

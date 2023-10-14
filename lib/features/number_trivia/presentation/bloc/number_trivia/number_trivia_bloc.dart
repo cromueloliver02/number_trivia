@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fpdart/fpdart.dart';
 
 import 'package:number_trivia/core/error/failures.dart';
 import 'package:number_trivia/core/util/input_converter.dart';
@@ -30,6 +31,12 @@ class NumberTriviaBloc extends Bloc<NumberTriviaEvent, NumberTriviaState> {
     NumberTriviaConcreteLoaded event,
     Emitter<NumberTriviaState> emit,
   ) {
-    _inputConverter.stringToUnsignedInt(event.number);
+    final Either<Failure, int> either =
+        _inputConverter.stringToUnsignedInt(event.number);
+
+    either.fold(
+      (Failure failure) => emit(NumberTriviaFailure(failure: failure)),
+      (int integer) => throw UnimplementedError(),
+    );
   }
 }
