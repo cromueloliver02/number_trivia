@@ -35,5 +35,17 @@ void main() {
         expect(result, Left(FormatFailure()));
       },
     );
+
+    test(
+      'should return [FormatFailure] when the string is a negative integer',
+      () async {
+        // arrange
+        const String str = '-123';
+        // act
+        final result = inputConverter.stringToUnsignedInt(str);
+        // assert
+        expect(result, Left(FormatFailure()));
+      },
+    );
   });
 }
