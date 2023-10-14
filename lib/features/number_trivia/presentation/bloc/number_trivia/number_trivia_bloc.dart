@@ -54,10 +54,18 @@ class NumberTriviaBloc extends Bloc<NumberTriviaEvent, NumberTriviaState> {
     );
   }
 
-  void _onNumberTriviaRandomLoaded(
+  Future<void> _onNumberTriviaRandomLoaded(
     NumberTriviaRandomLoaded event,
     Emitter<NumberTriviaState> emit,
-  ) {
-    _getRandomNumberTrivia(NoParams());
+  ) async {
+    emit(NumberTriviaInProgress());
+
+    final Either<Failure, NumberTrivia> either =
+        await _getRandomNumberTrivia(NoParams());
+
+    either.fold(
+      (Failure failure) => throw UnimplementedError(),
+      (NumberTrivia trivia) => emit(NumberTriviaSuccess(trivia: trivia)),
+    );
   }
 }

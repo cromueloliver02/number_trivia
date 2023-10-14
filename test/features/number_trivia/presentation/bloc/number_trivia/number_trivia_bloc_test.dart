@@ -180,6 +180,23 @@ void main() {
           verify(() => mockGetRandomNumberTrivia(NoParams()));
         },
       );
+
+      blocTest<NumberTriviaBloc, NumberTriviaState>(
+        '''
+        emits [NumberTriviaInProgress, NumberTriviaSuccess] when
+        NumberTriviaRandomLoaded is added and data is gotten successfully
+        ''',
+        build: () {
+          when(() => mockGetRandomNumberTrivia(NoParams()))
+              .thenAnswer((invocation) async => const Right(tNumberTrivia));
+          return bloc;
+        },
+        act: (bloc) => bloc.add(NumberTriviaRandomLoaded()),
+        expect: () => <NumberTriviaState>[
+          NumberTriviaInProgress(),
+          const NumberTriviaSuccess(trivia: tNumberTrivia),
+        ],
+      );
     },
   );
 }
