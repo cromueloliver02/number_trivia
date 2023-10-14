@@ -166,6 +166,7 @@ void main() {
     () {
       const NumberTrivia tNumberTrivia =
           NumberTrivia(text: 'test trivia', number: 1);
+      const Failure tFailure = Failure();
 
       test(
         'should get the data from the random use case',
@@ -195,6 +196,23 @@ void main() {
         expect: () => <NumberTriviaState>[
           NumberTriviaInProgress(),
           const NumberTriviaSuccess(trivia: tNumberTrivia),
+        ],
+      );
+
+      blocTest<NumberTriviaBloc, NumberTriviaState>(
+        '''
+        emits [NumberTriviaInProgress, NumberTriviaFailure] when
+        NumberTriviaRandomLoaded is added and getting data fails
+        ''',
+        build: () {
+          when(() => mockGetRandomNumberTrivia(NoParams()))
+              .thenAnswer((invocation) async => const Left(tFailure));
+          return bloc;
+        },
+        act: (bloc) => bloc.add(NumberTriviaRandomLoaded()),
+        expect: () => <NumberTriviaState>[
+          NumberTriviaInProgress(),
+          const NumberTriviaFailure(failure: tFailure),
         ],
       );
     },

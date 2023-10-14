@@ -64,7 +64,7 @@ class NumberTriviaBloc extends Bloc<NumberTriviaEvent, NumberTriviaState> {
         await _getRandomNumberTrivia(NoParams());
 
     either.fold(
-      (Failure failure) => throw UnimplementedError(),
+      (Failure failure) => emit(NumberTriviaFailure(failure: failure)),
       (NumberTrivia trivia) => emit(NumberTriviaSuccess(trivia: trivia)),
     );
   }
