@@ -21,20 +21,18 @@ void main() {
 
   const NumberTrivia tNumberTrivia = NumberTrivia(text: 'test', number: 1);
 
-  group('GetRandomNumberTrivia usecase', () {
-    test(
-      'should get random number trivia from the repository when success',
-      () async {
-        // arrange
-        when(() => mockNumberTriviaRepository.getRandomNumberTrivia())
-            .thenAnswer((invocation) async => const Right(tNumberTrivia));
-        // act
-        final result = await usecase(NoParams());
-        // assert
-        expect(result, const Right(tNumberTrivia));
-        verify(() => mockNumberTriviaRepository.getRandomNumberTrivia());
-        verifyNoMoreInteractions(mockNumberTriviaRepository);
-      },
-    );
-  });
+  test(
+    'should get random number trivia from the repository when success',
+    () async {
+      // arrange
+      when(() => mockNumberTriviaRepository.getRandomNumberTrivia())
+          .thenAnswer((invocation) async => const Right(tNumberTrivia));
+      // act
+      final result = await usecase(NoParams());
+      // assert
+      expect(result, const Right(tNumberTrivia));
+      verify(() => mockNumberTriviaRepository.getRandomNumberTrivia());
+      verifyNoMoreInteractions(mockNumberTriviaRepository);
+    },
+  );
 }
