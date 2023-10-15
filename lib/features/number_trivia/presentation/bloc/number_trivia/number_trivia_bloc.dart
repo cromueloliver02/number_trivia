@@ -29,17 +29,17 @@ class NumberTriviaBloc extends Bloc<NumberTriviaEvent, NumberTriviaState> {
     on<NumberTriviaRandomLoaded>(_onNumberTriviaRandomLoaded);
   }
 
-  void _onNumberTriviaConcreteLoaded(
+  Future<void> _onNumberTriviaConcreteLoaded(
     NumberTriviaConcreteLoaded event,
     Emitter<NumberTriviaState> emit,
-  ) {
+  ) async {
     emit(NumberTriviaInProgress());
 
     final Either<Failure, int> eitherNumber =
         _inputConverter.stringToUnsignedInt(event.number);
 
-    eitherNumber.fold(
-      (Failure failure) => emit(NumberTriviaFailure(failure: failure)),
+    await eitherNumber.fold(
+      (Failure failure) async => emit(NumberTriviaFailure(failure: failure)),
       (int number) async {
         final Either<Failure, NumberTrivia> eitherTrivia =
             await _getConcreteNumberTrivia(
