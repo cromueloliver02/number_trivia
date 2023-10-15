@@ -23,13 +23,13 @@ void main() {
   late MockGetConcreteNumberTrivia mockGetConcreteNumberTrivia;
   late MockGetRandomNumberTrivia mockGetRandomNumberTrivia;
   late MockInputConverter mockInputConverter;
-  late NumberTriviaBloc bloc;
+  late NumberTriviaBloc sut;
 
   setUp(() {
     mockGetConcreteNumberTrivia = MockGetConcreteNumberTrivia();
     mockGetRandomNumberTrivia = MockGetRandomNumberTrivia();
     mockInputConverter = MockInputConverter();
-    bloc = NumberTriviaBloc(
+    sut = NumberTriviaBloc(
       getConcreteNumberTrivia: mockGetConcreteNumberTrivia,
       getRandomNumberTrivia: mockGetRandomNumberTrivia,
       inputConverter: mockInputConverter,
@@ -41,7 +41,7 @@ void main() {
     '[NumberTriviaState] should be initial state',
     () async {
       // act
-      final result = bloc.state;
+      final result = sut.state;
       // assert
       expect(result, NumberTriviaInitial());
     },
@@ -88,7 +88,7 @@ void main() {
           stubStringToUnsignedIntSuccess();
           stubGetConcreteNumberTriviaSuccess();
           // act
-          bloc.add(const NumberTriviaConcreteLoaded(number: tNumberString));
+          sut.add(const NumberTriviaConcreteLoaded(number: tNumberString));
           await untilCalled(
               () => mockInputConverter.stringToUnsignedInt(any<String>()));
           // assert
@@ -103,10 +103,10 @@ void main() {
           stubStringToUnsignedIntFailure();
           stubGetConcreteNumberTriviaSuccess();
           // act
-          bloc.add(const NumberTriviaConcreteLoaded(number: tNumberString));
+          sut.add(const NumberTriviaConcreteLoaded(number: tNumberString));
           await untilCalled(
               () => mockInputConverter.stringToUnsignedInt(any<String>()));
-          final result = bloc.state;
+          final result = sut.state;
           // assert
           expect(result, isA<NumberTriviaFailure>());
         },
@@ -119,7 +119,7 @@ void main() {
           stubStringToUnsignedIntSuccess();
           stubGetConcreteNumberTriviaSuccess();
           // act
-          bloc.add(const NumberTriviaConcreteLoaded(number: tNumberString));
+          sut.add(const NumberTriviaConcreteLoaded(number: tNumberString));
           await untilCalled(
               () => mockInputConverter.stringToUnsignedInt(any<String>()));
           // assert
@@ -136,7 +136,7 @@ void main() {
         build: () {
           stubStringToUnsignedIntSuccess();
           stubGetConcreteNumberTriviaSuccess();
-          return bloc;
+          return sut;
         },
         act: (bloc) =>
             bloc.add(const NumberTriviaConcreteLoaded(number: tNumberString)),
@@ -154,7 +154,7 @@ void main() {
         build: () {
           stubStringToUnsignedIntSuccess();
           stubGetConcreteNumberTriviaFailure();
-          return bloc;
+          return sut;
         },
         act: (bloc) =>
             bloc.add(const NumberTriviaConcreteLoaded(number: tNumberString)),
@@ -188,7 +188,7 @@ void main() {
           // arrange
           stubGetRandomNumberTriviaSuccess();
           // act
-          bloc.add(NumberTriviaRandomLoaded());
+          sut.add(NumberTriviaRandomLoaded());
           await untilCalled(() => mockGetRandomNumberTrivia(NoParams()));
           // assert
           verify(() => mockGetRandomNumberTrivia(NoParams()));
@@ -202,7 +202,7 @@ void main() {
         ''',
         build: () {
           stubGetRandomNumberTriviaSuccess();
-          return bloc;
+          return sut;
         },
         act: (bloc) => bloc.add(NumberTriviaRandomLoaded()),
         expect: () => <NumberTriviaState>[
@@ -218,7 +218,7 @@ void main() {
         ''',
         build: () {
           stubGetRandomNumberTriviaFailure();
-          return bloc;
+          return sut;
         },
         act: (bloc) => bloc.add(NumberTriviaRandomLoaded()),
         expect: () => <NumberTriviaState>[

@@ -12,11 +12,11 @@ class MockNumberTriviaRepository extends Mock
 
 void main() {
   late MockNumberTriviaRepository mockNumberTriviaRepository;
-  late GetConcreteNumberTrivia usecase;
+  late GetConcreteNumberTrivia sut;
 
   setUp(() {
     mockNumberTriviaRepository = MockNumberTriviaRepository();
-    usecase = GetConcreteNumberTrivia(mockNumberTriviaRepository);
+    sut = GetConcreteNumberTrivia(mockNumberTriviaRepository);
   });
 
   const int tNumber = 1;
@@ -33,7 +33,7 @@ void main() {
       ).thenAnswer((invocation) async => const Right(tNumberTrivia));
       // act
       final result =
-          await usecase(const GetConcreteNumberTriviaParams(number: tNumber));
+          await sut(const GetConcreteNumberTriviaParams(number: tNumber));
       // assert
       expect(result, const Right(tNumberTrivia));
       verify(() => mockNumberTriviaRepository.getConcreteNumberTrivia(tNumber));
@@ -49,7 +49,7 @@ void main() {
           .thenAnswer((invocation) async => const Left(tFailure));
       // act
       final result =
-          await usecase(const GetConcreteNumberTriviaParams(number: tNumber));
+          await sut(const GetConcreteNumberTriviaParams(number: tNumber));
       // assert
       verify(() => mockNumberTriviaRepository.getConcreteNumberTrivia(tNumber));
       expect(result, const Left(tFailure));

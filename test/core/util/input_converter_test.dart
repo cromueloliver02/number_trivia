@@ -6,10 +6,10 @@ import 'package:number_trivia/core/extensions/extensions.dart';
 import 'package:number_trivia/core/util/input_converter.dart';
 
 void main() {
-  late InputConverter inputConverter;
+  late InputConverter sut;
 
   setUp(() {
-    inputConverter = InputConverter();
+    sut = InputConverter();
   });
 
   group('stringToUnsignedInt()', () {
@@ -19,7 +19,7 @@ void main() {
         // arrange
         const String str = '123';
         // act
-        final result = inputConverter.stringToUnsignedInt(str);
+        final result = sut.stringToUnsignedInt(str);
         // assert
         expect(result, Right(int.parse(str)));
       },
@@ -31,7 +31,7 @@ void main() {
         // arrange
         const String str = 'abc'; // 12.3 throws FormatException as well
         // act
-        final either = inputConverter.stringToUnsignedInt(str);
+        final either = sut.stringToUnsignedInt(str);
         final result = either.unwrapLeft();
         // assert
         expect(result, isA<FormatFailure>());
@@ -44,7 +44,7 @@ void main() {
         // arrange
         const String str = '-123';
         // act
-        final either = inputConverter.stringToUnsignedInt(str);
+        final either = sut.stringToUnsignedInt(str);
         final result = either.unwrapLeft();
         // assert
         expect(result, isA<FormatFailure>());

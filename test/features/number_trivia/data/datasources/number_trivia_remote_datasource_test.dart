@@ -14,13 +14,11 @@ class MockHttpClient extends Mock implements http.Client {}
 
 void main() {
   late MockHttpClient mockHttpClient;
-  late NumberTriviaRemoteDataSource numberTriviaRemoteDataSource;
+  late NumberTriviaRemoteDataSource sut;
 
   setUp(() {
     mockHttpClient = MockHttpClient();
-    numberTriviaRemoteDataSource = NumberTriviaRemoteDataSourceImpl(
-      httpClient: mockHttpClient,
-    );
+    sut = NumberTriviaRemoteDataSourceImpl(httpClient: mockHttpClient);
   });
 
   const int tNumber = 1;
@@ -56,7 +54,7 @@ void main() {
         // arrange
         setupMockHttpClientSucess200('http://numbersapi.com/$tNumber');
         // act
-        await numberTriviaRemoteDataSource.getConcreteNumberTrivia(1);
+        await sut.getConcreteNumberTrivia(1);
         // assert
         verify(() => mockHttpClient.get(
               Uri.parse('http://numbersapi.com/$tNumber'),
@@ -71,8 +69,7 @@ void main() {
         // arrange
         setupMockHttpClientSucess200('http://numbersapi.com/$tNumber');
         // act
-        final result =
-            await numberTriviaRemoteDataSource.getConcreteNumberTrivia(tNumber);
+        final result = await sut.getConcreteNumberTrivia(tNumber);
         // assert
         verify(() => mockHttpClient.get(
               Uri.parse('http://numbersapi.com/$tNumber'),
@@ -88,8 +85,7 @@ void main() {
         // arrange
         setupMockHttpClientFailure500('http://numbersapi.com/$tNumber');
         // act
-        final result =
-            numberTriviaRemoteDataSource.getConcreteNumberTrivia(tNumber);
+        final result = sut.getConcreteNumberTrivia(tNumber);
         // assert
         verify(() => mockHttpClient.get(
               Uri.parse('http://numbersapi.com/$tNumber'),
@@ -110,7 +106,7 @@ void main() {
         // arrange
         setupMockHttpClientSucess200('http://numbersapi.com/random');
         // act
-        await numberTriviaRemoteDataSource.getRandomNumberTrivia();
+        await sut.getRandomNumberTrivia();
         // assert
         verify(() => mockHttpClient.get(
               Uri.parse('http://numbersapi.com/random'),
@@ -125,8 +121,7 @@ void main() {
         // arrange
         setupMockHttpClientSucess200('http://numbersapi.com/random');
         // act
-        final result =
-            await numberTriviaRemoteDataSource.getRandomNumberTrivia();
+        final result = await sut.getRandomNumberTrivia();
         // assert
         verify(() => mockHttpClient.get(
               Uri.parse('http://numbersapi.com/random'),
@@ -142,7 +137,7 @@ void main() {
         // arrange
         setupMockHttpClientFailure500('http://numbersapi.com/random');
         // act
-        final result = numberTriviaRemoteDataSource.getRandomNumberTrivia();
+        final result = sut.getRandomNumberTrivia();
         // assert
         verify(() => mockHttpClient.get(
               Uri.parse('http://numbersapi.com/random'),

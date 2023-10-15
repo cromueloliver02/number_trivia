@@ -26,13 +26,13 @@ void main() {
   late MockNumberTriviaRemoteDataSource mockRemoteDataSource;
   late MockNumberTriviaLocalDataSource mockLocalDataSource;
   late MockNetworkInfo mockNetworkInfo;
-  late NumberTriviaRepository repository;
+  late NumberTriviaRepository sut;
 
   setUp(() {
     mockRemoteDataSource = MockNumberTriviaRemoteDataSource();
     mockLocalDataSource = MockNumberTriviaLocalDataSource();
     mockNetworkInfo = MockNetworkInfo();
-    repository = NumberTriviaRepositoryImpl(
+    sut = NumberTriviaRepositoryImpl(
       remoteDataSource: mockRemoteDataSource,
       localDataSource: mockLocalDataSource,
       networkInfo: mockNetworkInfo,
@@ -66,7 +66,7 @@ void main() {
             .thenAnswer((invocation) => Future.value());
         // END - error fix
         // act
-        await repository.getConcreteNumberTrivia(tNumber);
+        await sut.getConcreteNumberTrivia(tNumber);
         // assert
         verify(() => mockNetworkInfo.isConnected);
         verifyNoMoreInteractions(mockNetworkInfo);
@@ -93,7 +93,7 @@ void main() {
                 .thenAnswer((invocation) => Future.value());
             // END - error fix
             // act
-            final result = await repository.getConcreteNumberTrivia(tNumber);
+            final result = await sut.getConcreteNumberTrivia(tNumber);
             // assert
             verify(() => mockRemoteDataSource.getConcreteNumberTrivia(tNumber));
             expect(result, Right(tNumberTrivia));
@@ -112,7 +112,7 @@ void main() {
                     mockLocalDataSource.cacheNumberTrivia(tNumberTriviaModel))
                 .thenAnswer((invocation) => Future.value());
             // act
-            await repository.getConcreteNumberTrivia(tNumber);
+            await sut.getConcreteNumberTrivia(tNumber);
             // assert
             verify(() => mockRemoteDataSource.getConcreteNumberTrivia(tNumber));
             verify(() =>
@@ -130,7 +130,7 @@ void main() {
                     mockLocalDataSource.cacheNumberTrivia(tNumberTriviaModel))
                 .thenAnswer((invocation) => Future.value());
             // act
-            final either = await repository.getConcreteNumberTrivia(tNumber);
+            final either = await sut.getConcreteNumberTrivia(tNumber);
             final result = either.unwrapLeft();
             // assert
             verify(() => mockRemoteDataSource.getConcreteNumberTrivia(tNumber));
@@ -158,7 +158,7 @@ void main() {
           when(() => mockLocalDataSource.getLastNumberTrivia())
               .thenAnswer((invocation) async => tNumberTriviaModel);
           // act
-          final result = await repository.getConcreteNumberTrivia(tNumber);
+          final result = await sut.getConcreteNumberTrivia(tNumber);
           // assert
           verify(() => mockLocalDataSource.getLastNumberTrivia());
           verifyZeroInteractions(mockRemoteDataSource);
@@ -173,7 +173,7 @@ void main() {
           when(() => mockLocalDataSource.getLastNumberTrivia())
               .thenThrow(tCacheException);
           // act
-          final either = await repository.getConcreteNumberTrivia(tNumber);
+          final either = await sut.getConcreteNumberTrivia(tNumber);
           final result = either.unwrapLeft();
           // assert
           verify(() => mockLocalDataSource.getLastNumberTrivia());
@@ -196,7 +196,7 @@ void main() {
         when(() => mockLocalDataSource.cacheNumberTrivia(tNumberTriviaModel))
             .thenAnswer((invocation) => Future.value());
         // act
-        await repository.getRandomNumberTrivia();
+        await sut.getRandomNumberTrivia();
         // assert
         verify(() => mockNetworkInfo.isConnected);
         verifyNoMoreInteractions(mockNetworkInfo);
@@ -218,7 +218,7 @@ void main() {
           when(() => mockLocalDataSource.cacheNumberTrivia(tNumberTriviaModel))
               .thenAnswer((invocation) => Future.value());
           // act
-          final result = await repository.getRandomNumberTrivia();
+          final result = await sut.getRandomNumberTrivia();
           // assert
           verify(() => mockRemoteDataSource.getRandomNumberTrivia());
           expect(result, Right(tNumberTrivia));
@@ -234,7 +234,7 @@ void main() {
           when(() => mockLocalDataSource.cacheNumberTrivia(tNumberTriviaModel))
               .thenAnswer((invocation) => Future.value());
           // act
-          await repository.getRandomNumberTrivia();
+          await sut.getRandomNumberTrivia();
           // assert
           verify(() => mockRemoteDataSource.getRandomNumberTrivia());
           verify(
@@ -249,7 +249,7 @@ void main() {
           when(() => mockRemoteDataSource.getRandomNumberTrivia())
               .thenThrow(tServerException);
           // act
-          final either = await repository.getRandomNumberTrivia();
+          final either = await sut.getRandomNumberTrivia();
           final result = either.unwrapLeft();
           // assert
           verify(() => mockRemoteDataSource.getRandomNumberTrivia());
@@ -276,7 +276,7 @@ void main() {
           when(() => mockLocalDataSource.getLastNumberTrivia())
               .thenAnswer((invocation) async => tNumberTriviaModel);
           // act
-          final result = await repository.getRandomNumberTrivia();
+          final result = await sut.getRandomNumberTrivia();
           // assert
           verify(() => mockLocalDataSource.getLastNumberTrivia());
           verifyZeroInteractions(mockRemoteDataSource);
@@ -291,7 +291,7 @@ void main() {
           when(() => mockLocalDataSource.getLastNumberTrivia())
               .thenThrow(tCacheException);
           // act
-          final either = await repository.getRandomNumberTrivia();
+          final either = await sut.getRandomNumberTrivia();
           final result = either.unwrapLeft();
           // assert
           verify(() => mockLocalDataSource.getLastNumberTrivia());
