@@ -39,10 +39,16 @@ class _HomeBottomBarState extends State<HomeBottomBar> {
               child: TextField(
                 controller: _controller,
                 decoration: InputDecoration(
+                  hintText: 'Enter a number',
                   labelText: 'Enter a number',
                   filled: true,
-                  fillColor: Colors.grey.shade200,
-                  border: InputBorder.none,
+                  fillColor: Colors.grey.shade100,
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: theme.primaryColor),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: theme.primaryColor),
+                  ),
                 ),
               ),
             ),
