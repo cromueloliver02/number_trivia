@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:mocktail/mocktail.dart';
 
+import 'package:number_trivia/core/constants/constants.dart';
 import 'package:number_trivia/core/error/failures.dart';
 import 'package:number_trivia/core/usecase/usecase.dart';
 import 'package:number_trivia/core/util/input_converter.dart';
@@ -37,7 +38,7 @@ void main() {
   const Failure tFailure = Failure();
 
   test(
-    'NumberTriviaState should be initial state',
+    '[NumberTriviaState] should be initial state',
     () async {
       // act
       final result = bloc.state;
@@ -52,10 +53,10 @@ void main() {
       const String tNumberString = '123';
       final int tNumberParsed = int.parse(tNumberString);
       final NumberTrivia tNumberTrivia =
-          NumberTrivia(text: any<String>(), number: tNumberParsed);
-      final FormatFailure tFormatFailure = FormatFailure(
-        message: any<String>(),
-        exception: const FormatException(),
+          NumberTrivia(text: 'test trivia', number: tNumberParsed);
+      const FormatFailure tFormatFailure = FormatFailure(
+        message: invalidInputMessage,
+        exception: FormatException(),
       );
 
       void stubStringToUnsignedIntSuccess() {
@@ -65,7 +66,7 @@ void main() {
 
       void stubStringToUnsignedIntFailure() {
         when(() => mockInputConverter.stringToUnsignedInt(any<String>()))
-            .thenReturn(Left(tFormatFailure));
+            .thenReturn(const Left(tFormatFailure));
       }
 
       void stubGetConcreteNumberTriviaSuccess() {
@@ -81,7 +82,7 @@ void main() {
       }
 
       test(
-        'should call the InputConverter to validate and convert the string to an unsigned integer',
+        'should call the [InputConverter] to validate and convert the string to an unsigned integer',
         () async {
           // arrange
           stubStringToUnsignedIntSuccess();

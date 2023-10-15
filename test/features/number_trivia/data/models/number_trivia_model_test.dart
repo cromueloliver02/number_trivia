@@ -9,10 +9,10 @@ import '../../../../fixtures/fixture_reader.dart';
 
 void main() {
   const NumberTriviaModel tNumberTriviaModel =
-      NumberTriviaModel(text: 'Test text', number: 1);
+      NumberTriviaModel(text: 'test trivia', number: 1);
 
   test(
-    'should be a subclass of NumberTrivia entity',
+    'NumberTriviaModel should be a subclass of [NumberTrivia] entity',
     () async {
       // assert
       expect(tNumberTriviaModel, isA<NumberTrivia>());
@@ -41,7 +41,7 @@ void main() {
         final result = tNumberTriviaModel.toJson();
         // assert
         final Map<String, dynamic> expectedMap = {
-          'text': 'Test text',
+          'text': 'test trivia',
           'number': 1,
         };
         expect(result, expectedMap);

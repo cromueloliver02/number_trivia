@@ -21,11 +21,11 @@ void main() {
 
   const int tNumber = 1;
   const NumberTrivia tNumberTrivia =
-      NumberTrivia(text: 'test', number: tNumber);
+      NumberTrivia(text: 'test trivia', number: tNumber);
   const Failure tFailure = Failure();
 
   test(
-    'should get number trivia for the number from the repository when success',
+    'should get concrete [NumberTrivia] for the number from the repository when success',
     () async {
       // arrange
       when(
@@ -42,7 +42,7 @@ void main() {
   );
 
   test(
-    'should get failure for the number from the repository when failed',
+    'should return [Failure] for the number from the repository when failed',
     () async {
       // arrange
       when(() => mockNumberTriviaRepository.getConcreteNumberTrivia(any<int>()))

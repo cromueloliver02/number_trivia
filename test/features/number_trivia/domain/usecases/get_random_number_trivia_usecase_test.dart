@@ -20,11 +20,12 @@ void main() {
     usecase = GetRandomNumberTrivia(mockNumberTriviaRepository);
   });
 
-  const NumberTrivia tNumberTrivia = NumberTrivia(text: 'test', number: 1);
+  const NumberTrivia tNumberTrivia =
+      NumberTrivia(text: 'test trivia', number: 1);
   const Failure tFailure = Failure();
 
   test(
-    'should get random number trivia from the repository when success',
+    'should get random [NumberTrivia] from the repository when success',
     () async {
       // arrange
       when(() => mockNumberTriviaRepository.getRandomNumberTrivia())
@@ -39,7 +40,7 @@ void main() {
   );
 
   test(
-    'should get failure from the repository when failed',
+    'should return [Failure] from the repository when failed',
     () async {
       // arrange
       when(() => mockNumberTriviaRepository.getRandomNumberTrivia())
