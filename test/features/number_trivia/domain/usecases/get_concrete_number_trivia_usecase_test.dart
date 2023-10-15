@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:mocktail/mocktail.dart';
 
+import 'package:number_trivia/core/error/failures.dart';
 import 'package:number_trivia/features/number_trivia/domain/entities/number_trivia_entity.dart';
 import 'package:number_trivia/features/number_trivia/domain/repositories/number_trivia_repository.dart';
 import 'package:number_trivia/features/number_trivia/domain/usecases/get_concrete_number_trivia_usecase.dart';
@@ -21,6 +22,7 @@ void main() {
   const int tNumber = 1;
   const NumberTrivia tNumberTrivia =
       NumberTrivia(text: 'test', number: tNumber);
+  const Failure tFailure = Failure();
 
   test(
     'should get number trivia for the number from the repository when success',
@@ -43,10 +45,14 @@ void main() {
     'should get failure for the number from the repository when failed',
     () async {
       // arrange
-
+      when(() => mockNumberTriviaRepository.getConcreteNumberTrivia(any<int>()))
+          .thenAnswer((invocation) async => const Left(tFailure));
       // act
-
+      final result =
+          await usecase(const GetConcreteNumberTriviaParams(number: tNumber));
       // assert
+      verify(() => mockNumberTriviaRepository.getConcreteNumberTrivia(tNumber));
+      expect(result, const Left(tFailure));
     },
   );
 }
