@@ -4,6 +4,7 @@ import 'package:mocktail/mocktail.dart';
 
 import 'package:number_trivia/core/error/exceptions.dart';
 import 'package:number_trivia/core/error/failures.dart';
+import 'package:number_trivia/core/extensions/extensions.dart';
 import 'package:number_trivia/core/network/network_info.dart';
 import 'package:number_trivia/features/number_trivia/data/datasources/number_trivia_local_datasource.dart';
 import 'package:number_trivia/features/number_trivia/data/datasources/number_trivia_remote_datasource.dart';
@@ -43,6 +44,13 @@ void main() {
   final NumberTrivia tNumberTrivia = tNumberTriviaModel.toEntity();
 
   group('NumberTriviaRepositoryImpl', () {
+    final ServerException tServerException = ServerException(
+      statusCode: any<int>(),
+      message: any<String>(),
+    );
+    final CacheException tCacheException =
+        CacheException(message: any<String>());
+
     group('getConcreteNumberTrivia()', () {
       const int tNumber = 1;
 
@@ -123,17 +131,18 @@ void main() {
               // arrange
               when(() =>
                       mockRemoteDataSource.getConcreteNumberTrivia(any<int>()))
-                  .thenThrow(ServerException());
+                  .thenThrow(tServerException);
               when(() =>
                       mockLocalDataSource.cacheNumberTrivia(tNumberTriviaModel))
                   .thenAnswer((invocation) => Future.value());
               // act
-              final result = await repository.getConcreteNumberTrivia(tNumber);
+              final either = await repository.getConcreteNumberTrivia(tNumber);
+              final result = either.unwrapLeft();
               // assert
               verify(
                   () => mockRemoteDataSource.getConcreteNumberTrivia(tNumber));
               verifyZeroInteractions(mockLocalDataSource);
-              expect(result, Left(ServerFailure()));
+              expect(result, isA<ServerFailure>());
             },
           );
         },
@@ -170,13 +179,14 @@ void main() {
           () async {
             // arrange
             when(() => mockLocalDataSource.getLastNumberTrivia())
-                .thenThrow(CacheException());
+                .thenThrow(tCacheException);
             // act
-            final result = await repository.getConcreteNumberTrivia(tNumber);
+            final either = await repository.getConcreteNumberTrivia(tNumber);
+            final result = either.unwrapLeft();
             // assert
             verify(() => mockLocalDataSource.getLastNumberTrivia());
             verifyZeroInteractions(mockRemoteDataSource);
-            expect(result, Left(CacheFailure()));
+            expect(result, isA<CacheFailure>());
           },
         );
       });
@@ -247,13 +257,14 @@ void main() {
           () async {
             // arrange
             when(() => mockRemoteDataSource.getRandomNumberTrivia())
-                .thenThrow(ServerException());
+                .thenThrow(tServerException);
             // act
-            final result = await repository.getRandomNumberTrivia();
+            final either = await repository.getRandomNumberTrivia();
+            final result = either.unwrapLeft();
             // assert
             verify(() => mockRemoteDataSource.getRandomNumberTrivia());
             verifyZeroInteractions(mockLocalDataSource);
-            expect(result, Left(ServerFailure()));
+            expect(result, isA<ServerFailure>());
           },
         );
       });
@@ -289,13 +300,14 @@ void main() {
           () async {
             // arrange
             when(() => mockLocalDataSource.getLastNumberTrivia())
-                .thenThrow(CacheException());
+                .thenThrow(tCacheException);
             // act
-            final result = await repository.getRandomNumberTrivia();
+            final either = await repository.getRandomNumberTrivia();
+            final result = either.unwrapLeft();
             // assert
             verify(() => mockLocalDataSource.getLastNumberTrivia());
             verifyZeroInteractions(mockRemoteDataSource);
-            expect(result, Left(CacheFailure()));
+            expect(result, isA<CacheFailure>());
           },
         );
       });

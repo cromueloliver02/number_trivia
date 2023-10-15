@@ -34,6 +34,7 @@ void main() {
       inputConverter: mockInputConverter,
     );
   });
+  const Failure tFailure = Failure();
 
   test(
     'NumberTriviaState should be initial state',
@@ -51,8 +52,11 @@ void main() {
       const String tNumberString = '123';
       final int tNumberParsed = int.parse(tNumberString);
       final NumberTrivia tNumberTrivia =
-          NumberTrivia(text: 'test trivia', number: tNumberParsed);
-      const Failure tFailure = Failure();
+          NumberTrivia(text: any<String>(), number: tNumberParsed);
+      final FormatFailure tFormatFailure = FormatFailure(
+        message: any<String>(),
+        exception: const FormatException(),
+      );
 
       void stubStringToUnsignedIntSuccess() {
         when(() => mockInputConverter.stringToUnsignedInt(any<String>()))
@@ -61,7 +65,7 @@ void main() {
 
       void stubStringToUnsignedIntFailure() {
         when(() => mockInputConverter.stringToUnsignedInt(any<String>()))
-            .thenReturn(Left(FormatFailure()));
+            .thenReturn(Left(tFormatFailure));
       }
 
       void stubGetConcreteNumberTriviaSuccess() {
@@ -166,7 +170,6 @@ void main() {
     () {
       const NumberTrivia tNumberTrivia =
           NumberTrivia(text: 'test trivia', number: 1);
-      const Failure tFailure = Failure();
 
       void stubGetRandomNumberTriviaSuccess() {
         when(() => mockGetRandomNumberTrivia(NoParams()))

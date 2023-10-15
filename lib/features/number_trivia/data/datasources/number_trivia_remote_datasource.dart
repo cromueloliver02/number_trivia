@@ -2,8 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
-import 'package:number_trivia/core/error/exceptions.dart';
 
+import 'package:number_trivia/core/constants/constants.dart';
+import 'package:number_trivia/core/error/exceptions.dart';
 import 'package:number_trivia/features/number_trivia/data/models/number_trivia_model.dart';
 
 abstract class NumberTriviaRemoteDataSource {
@@ -31,7 +32,12 @@ class NumberTriviaRemoteDataSourceImpl implements NumberTriviaRemoteDataSource {
     final Map<String, String> headers = {'Content-Type': 'application/json'};
     final http.Response response = await _httpClient.get(uri, headers: headers);
 
-    if (response.statusCode != HttpStatus.ok) throw ServerException();
+    if (response.statusCode != HttpStatus.ok) {
+      throw ServerException(
+        statusCode: response.statusCode,
+        message: response.reasonPhrase ?? serverExceptionMessage,
+      );
+    }
 
     final NumberTriviaModel numberTriviaModel =
         NumberTriviaModel.fromJson(jsonDecode(response.body));
@@ -45,7 +51,12 @@ class NumberTriviaRemoteDataSourceImpl implements NumberTriviaRemoteDataSource {
     final Map<String, String> headers = {'Content-Type': 'application/json'};
     final http.Response response = await _httpClient.get(uri, headers: headers);
 
-    if (response.statusCode != HttpStatus.ok) throw ServerException();
+    if (response.statusCode != HttpStatus.ok) {
+      throw ServerException(
+        statusCode: response.statusCode,
+        message: response.reasonPhrase ?? serverExceptionMessage,
+      );
+    }
 
     final NumberTriviaModel numberTriviaModel =
         NumberTriviaModel.fromJson(jsonDecode(response.body));

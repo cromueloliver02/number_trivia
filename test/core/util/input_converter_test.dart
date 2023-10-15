@@ -1,7 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
-import 'package:number_trivia/core/error/failures.dart';
 
+import 'package:number_trivia/core/error/failures.dart';
+import 'package:number_trivia/core/extensions/extensions.dart';
 import 'package:number_trivia/core/util/input_converter.dart';
 
 void main() {
@@ -30,9 +31,10 @@ void main() {
         // arrange
         const String str = 'abc'; // 12.3 throws FormatException as well
         // act
-        final result = inputConverter.stringToUnsignedInt(str);
+        final either = inputConverter.stringToUnsignedInt(str);
+        final result = either.unwrapLeft();
         // assert
-        expect(result, Left(FormatFailure()));
+        expect(result, isA<FormatFailure>());
       },
     );
 
@@ -42,9 +44,10 @@ void main() {
         // arrange
         const String str = '-123';
         // act
-        final result = inputConverter.stringToUnsignedInt(str);
+        final either = inputConverter.stringToUnsignedInt(str);
+        final result = either.unwrapLeft();
         // assert
-        expect(result, Left(FormatFailure()));
+        expect(result, isA<FormatFailure>());
       },
     );
   });

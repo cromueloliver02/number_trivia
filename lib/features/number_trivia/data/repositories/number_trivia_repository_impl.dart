@@ -1,6 +1,6 @@
 import 'package:fpdart/fpdart.dart';
-import 'package:number_trivia/core/error/exceptions.dart';
 
+import 'package:number_trivia/core/error/exceptions.dart';
 import 'package:number_trivia/core/error/failures.dart';
 import 'package:number_trivia/core/network/network_info.dart';
 import 'package:number_trivia/features/number_trivia/data/datasources/number_trivia_local_datasource.dart';
@@ -53,10 +53,13 @@ class NumberTriviaRepositoryImpl implements NumberTriviaRepository {
 
         return Right(localNumberTriviaModel.toEntity());
       }
-    } on ServerException {
-      return Left(ServerFailure());
-    } on CacheException {
-      return Left(CacheFailure());
+    } on ServerException catch (err) {
+      return Left(ServerFailure(
+        statusCode: err.statusCode,
+        message: err.message,
+      ));
+    } on CacheException catch (err) {
+      return Left(CacheFailure(message: err.message));
     }
   }
 }
