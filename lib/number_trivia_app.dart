@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+
+import 'package:number_trivia/core/theme/app_theme.dart';
+import 'package:number_trivia/features/number_trivia/presentation/pages/home/home_page.dart';
 import 'package:number_trivia/injection_container.dart' as di;
 
 class NumberTriviaApp extends StatelessWidget {
@@ -12,22 +15,16 @@ class NumberTriviaApp extends StatelessWidget {
         if (!snapshot.hasData) {
           return const MaterialApp(
             home: Scaffold(
-              body: Center(
-                child: CircularProgressIndicator(),
-              ),
+              body: Center(child: CircularProgressIndicator()),
             ),
           );
         }
 
         return MaterialApp(
           title: 'Number Trivia',
-          theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-            useMaterial3: true,
-          ),
-          home: const Scaffold(
-            body: Center(child: Text('Number Trivia App')),
-          ),
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.theme,
+          home: const HomePage(),
         );
       },
     );

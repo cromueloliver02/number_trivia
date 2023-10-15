@@ -21,7 +21,7 @@ void inject() {
   sl.registerLazySingleton<InternetConnectionChecker>(
     () => InternetConnectionChecker(),
   );
-  sl.registerLazySingletonAsync<SharedPreferences>(
+  sl.registerSingletonAsync<SharedPreferences>(
     () => SharedPreferences.getInstance(),
   );
 
